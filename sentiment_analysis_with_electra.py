@@ -48,7 +48,8 @@ model2layer = {
 }
 
 # Map to huggingface model
-args = args_parser.parse_args()
+# args = args_parser.parse_args()
+args = args_parser.parse_args(args=[])
 model_name = model2hugmodel[args.model_type]
 if args.num_layers == -1:
    num_layers = model2layer[args.model_type]
@@ -65,7 +66,7 @@ def AvgPooling(data, denominator, dim=1):
 
 class ModelData():
     def __init__(self, args):
-        self.tokenizer = AutoTokenizer.from_pretrained(args.model_name, do_lower_case=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, do_lower_case=True)
         self.cls_token = self.tokenizer.cls_token
         self.sep_token = self.tokenizer.sep_token
         self.pad_token = self.tokenizer.pad_token
