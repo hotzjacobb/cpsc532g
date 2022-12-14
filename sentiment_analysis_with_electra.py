@@ -166,17 +166,15 @@ def prediction(tokenizer, dataset, model, args):
 
 # Function for reading data
 def read_data(fname):
-    review = []
-    label = []
+    reviews = []
+    labels = []
     data=load_dataset("rotten_tomatoes", split="train")
     for datum in data:
         context = [a.strip() for a in datum['text']]
         context = ' '.join(context)
-        for key, option in datum['label']:
-            chat.append(context)
-            response.append(option)
-            label.append(key)
-    return chat, response, label
+        reviews.append(context)
+        labels.append(datum['label'])
+    return reviews, labels
 
 
 def set_seed(args):
@@ -294,9 +292,9 @@ train_data = load_dataset("rotten_tomatoes", split="train")
 dev_data = load_dataset("rotten_tomatoes", split="validation")
 test_data = load_dataset("rotten_tomatoes", split="test")
 
-trainset = read_data(args.train_data)
-devset = read_data(args.dev_data)
-testset = read_data(args.test_data)
+trainset = read_data(train_data)
+devset = read_data(dev_data)
+testset = read_data(test_data)
 train_dataset = modeldata.preprocess(trainset[0], trainset[1])
 dev_dataset = modeldata.preprocess(devset[0], devset[1])
 test_dataset = modeldata.preprocess(testset[0], testset[1])
