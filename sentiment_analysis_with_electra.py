@@ -50,9 +50,10 @@ model2layer = {
 # Map to huggingface model
 args = args_parser.parse_args()
 model_name = model2hugmodel[args.model_type]
-args.model_name = model2hugmodel[args.model_type]
 if args.num_layers == -1:
-    args.num_layers = model2layer[args.model_type]
+   num_layers = model2layer[args.model_type]
+else:
+    num_layers = args.num_layers
 
 def AvgPooling(data, denominator, dim=1):
     assert len(data.size()) == 3
@@ -112,11 +113,11 @@ class Batch():
         return (self.review, self.label, self.mask_review)
 
 class Model(nn.Module):
-    def __init__(self, args, device):
+    def __init__(self, model_name, num_layers, device):
         super(Model, self).__init__()
-        self.args = args
+        self.model_name = model_name
         self.device = device
-        self.model = Model(model_name, args.num_layers)
+        self.model = Model(model_name, num_layers, device)
         self.dropout = nn.Dropout(0.2)
         self.linear = nn.Linear(self.model.config.hidden_size, 1)
         self.loss = torch.nn.BCEWithLogitsLoss(reduction='none')
@@ -124,7 +125,7 @@ class Model(nn.Module):
     def forward(self, review, mask_review):
         batch_size = review.shape[0]
         with torch.no_grad():
-            if self.args.model_type in ['electra']:
+            if self.model_type in ['electra']:
                 top_vec = self.model(input_ids=review, attention_mask=mask_review)[0]
             else:
                 top_vec, _ = self.model(input_ids=review, attention_mask=mask_review)
@@ -307,8 +308,7 @@ f.write('layers, dev, test, dev_pred, test_pred\n')
 f.close()
 for idx in range(1,args.num_layers+1):
     args.num_layers = idx
-    print(args)
-    model = Model(args, device)
+    model = Model(model_name, num_layers, device)
     # b/c of my limited compute I will just test the encoder of t5-base
     if idx > 6:
         continue
