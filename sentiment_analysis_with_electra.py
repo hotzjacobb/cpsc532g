@@ -307,6 +307,7 @@ f.write('layers, dev, test, dev_pred, test_pred\n')
 f.close()
 for idx in range(1,args.num_layers+1):
     args.num_layers = idx
+    print(args)
     model = Model(args, device)
     # b/c of my limited compute I will just test the encoder of t5-base
     if idx > 6:
