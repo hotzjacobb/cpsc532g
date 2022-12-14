@@ -12,6 +12,7 @@ from sklearn.metrics import f1_score, accuracy_score
 from transformers import AutoTokenizer
 from transformers import AdamW, get_linear_schedule_with_warmup
 from tqdm import tqdm
+from datasets import load_dataset
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +34,6 @@ args_parser.add_argument('--model_type', type=str, default='bert', \
         choices=['bert', 'roberta', 'albert', 'electra', 'gpt2', 'bart', 't5', 't5-base', 'bert-large', 'bert-zh', 'bert-es', 'bert-de'], help='select one of language')
 args_parser.add_argument('--num_layers', type=int, default=-1, help='start from number of layers')
 args_parser.add_argument('--output_folder', type=str, default='output', help='output_folder')
-args_parser.add_argument('--train_data', type=str, default='data/train.json', help='path to train data')
-args_parser.add_argument('--dev_data', type=str, default='data/dev.json', help='path to dev data')
-args_parser.add_argument('--test_data', type=str, default='data/test.json', help='path to test data')
 
 model2hugmodel = {
     'bert': 'bert-base-uncased',
@@ -168,14 +166,13 @@ def prediction(tokenizer, dataset, model, args):
 
 # Function for reading data
 def read_data(fname):
-    chat = [] #will be 4 times
-    response = []
+    review = []
     label = []
-    data=json.load(open(fname,'r'))
+    data=load_dataset("rotten_tomatoes", split="train")
     for datum in data:
-        context = [a.strip() for a in datum['context']]
+        context = [a.strip() for a in datum['text']]
         context = ' '.join(context)
-        for key, option in datum['answer']:
+        for key, option in datum['label']:
             chat.append(context)
             response.append(option)
             label.append(key)
@@ -292,6 +289,10 @@ if args.local_rank == 0:
     torch.distributed.barrier()
 
 modeldata = ModelData(args)
+
+train_data = load_dataset("rotten_tomatoes", split="train")
+dev_data = load_dataset("rotten_tomatoes", split="validation")
+test_data = load_dataset("rotten_tomatoes", split="test")
 
 trainset = read_data(args.train_data)
 devset = read_data(args.dev_data)
