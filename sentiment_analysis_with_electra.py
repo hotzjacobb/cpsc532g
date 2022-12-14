@@ -49,6 +49,7 @@ model2layer = {
 
 # Map to huggingface model
 args = args_parser.parse_args()
+model_name = model2hugmodel[args.model_type]
 args.model_name = model2hugmodel[args.model_type]
 if args.num_layers == -1:
     args.num_layers = model2layer[args.model_type]
@@ -115,7 +116,7 @@ class Model(nn.Module):
         super(Model, self).__init__()
         self.args = args
         self.device = device
-        self.model = Model(args.model_name, args.num_layers)
+        self.model = Model(model_name, args.num_layers)
         self.dropout = nn.Dropout(0.2)
         self.linear = nn.Linear(self.model.config.hidden_size, 1)
         self.loss = torch.nn.BCEWithLogitsLoss(reduction='none')
