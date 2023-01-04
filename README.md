@@ -1,3 +1,9 @@
+
+# Update:
+Please see my investigation report [https://github.com/hotzjacobb/cpsc532g/blob/main/cpsc532g_final_proj_final.pdf](https://github.com/hotzjacobb/cpsc532g/blob/main/cpsc532g_final_proj_final.pdf)
+
+
+# Original outline:
 Below is my proposal for my course project. When completed, I will update this README with results and hopefully conclusions (:
 
 # A further examination into *Discourse Probing of Pretrained Language Models* (Koto et al.) and *ELECTRA: Pre-training Text Encoders as Discriminators Rather Than Generators* (Clark et al.)
